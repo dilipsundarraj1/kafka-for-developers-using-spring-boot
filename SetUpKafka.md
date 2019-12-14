@@ -20,7 +20,7 @@ listeners=PLAINTEXT://localhost:9092
 auto.create.topics.enable=false
 ```
 
--   Start up the Kafka Broker.
+-   Start up the Kafka Broker
 
 ```
 ./kafka-server-start.sh ../config/server.properties
