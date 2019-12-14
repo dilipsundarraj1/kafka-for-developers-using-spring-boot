@@ -13,6 +13,13 @@
 ./zookeeper-server-start.sh ../config/zookeeper.properties
 ```
 
+- Add the below properties in the server.properties
+
+```
+listeners=PLAINTEXT://localhost:9092
+auto.create.topics.enable=false
+```
+
 -   Start up the Kafka Broker.
 
 ```
@@ -170,6 +177,12 @@ auto.create.topics.enable=false
 ```
 ./kafka-topics.sh --zookeeper localhost:2181 --topic <topic-name>
 ```
+
+## Delete a topic
+
+```
+./kafka-topics.sh --zookeeper localhost:2181 --delete --topic topic1
+```
 ## How to view consumer groups
 
 ```
@@ -215,6 +228,14 @@ kafka-topics.bat --zookeeper localhost:2181 --describe
 ```
 kafka-topics.bat --zookeeper localhost:2181 --topic <topic-name>
 ```
+
+## Delete a topic
+
+```
+kafka-topics.bat --zookeeper localhost:2181 --delete --topic <topic-name>
+```
+
+
 ## How to view consumer groups
 
 ```
