@@ -1,0 +1,68 @@
+spring:
+  profiles:
+    active: dev
+server:
+  port: 8081
+#logging:
+#  level:
+#    root: debug
+
+---
+spring:
+  profiles: dev
+  kafka:
+    topic: library-events
+    #    template:
+    #      default-topic: library-events
+    consumer:
+      bootstrap-servers:
+        - localhost:9092,localhost:9093,localhost:9094
+      #enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: library-events-listener-group
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+  h2:
+    console:
+      enabled: true
+
+---
+spring:
+  profiles: nonprod
+  kafka:
+    topic: library-events
+    #    template:
+    #      default-topic: library-events
+    consumer:
+      bootstrap-servers:
+        - localhost:9092,localhost:9093,localhost:9094
+      #enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: library-events-listener-group
+
+---
+spring:
+  profiles: prod
+  kafka:
+    topic: library-events
+    #    template:
+    #      default-topic: library-events
+    consumer:
+      bootstrap-servers:
+        - localhost:9092,localhost:9093,localhost:9094
+      #enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: library-events-listener-group
+
+
