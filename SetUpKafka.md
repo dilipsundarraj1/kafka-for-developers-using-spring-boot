@@ -3,18 +3,111 @@
 <details><summary>Mac</summary>
 <p>
 
+- Make sure you are navigated inside the bin directory.
+
+## Start Zookeeper and Kafka Broker
+
 -   Start up the Zookeeper.
 
-```youtrack
+```
 ./zookeeper-server-start.sh ../config/zookeeper.properties
 ```
 
 -   Start up the Kafka Broker.
 
-```youtrack
+```
 ./kafka-server-start.sh ../config/server.properties
 ```
 
+## How to create a topic ?
+
+```
+./kafka-topics.sh --create --topic test-topic -zookeeper localhost:2181 --replication-factor 1 --partitions 4
+```
+
+## How to instantiate a Console Producer?
+
+### Without Key
+
+```
+./kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic
+```
+
+### With Key
+
+```
+./kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic --property "key.separator=-" --property "parse.key=true"
+```
+
+## How to instantiate a Console Consumer?
+
+### Without Key
+
+```
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+```
+
+### With Key
+
+```
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= | " --property "print.key=true"
+```
+</p>
+
+</details>
+
+<details><summary>Windows</summary>
+<p>
+
+- Make sure you are inside the **bin/windows** directory.
+
+## Start Zookeeper and Kafka Broker
+
+-   Start up the Zookeeper.
+
+```
+zookeeper-server-start.bat ..\..\config\zookeeper.properties
+```
+
+-   Start up the Kafka Broker.
+
+```
+kafka-server-start.bat ..\..\config\server.properties
+```
+
+## How to create a topic ?
+
+```
+kafka-topics.bat --create --topic test-topic -zookeeper localhost:2181 --replication-factor 1 --partitions 4
+```
+
+## How to instantiate a Console Producer?
+
+### Without Key
+
+```
+kafka-console-producer.bat --broker-list localhost:9092 --topic test-topic
+```
+
+### With Key
+
+```
+kafka-console-producer.bat --broker-list localhost:9092 --topic test-topic --property "key.separator=-" --property "parse.key=true"
+```
+
+## How to instantiate a Console Consumer?
+
+### Without Key
+
+```
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+```
+
+### With Key
+
+```
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= | " --property "print.key=true"
+```
 </p>
 
 </details>
@@ -53,71 +146,10 @@ auto.create.topics.enable=false
 ./kafka-server-start.sh ../config/server-2.properties
 ```
 
-
-## How to create a topic ?
-
-**my-first-topic:**
-```youtrack
-./kafka-topics.sh --create --topic test-topic -zookeeper localhost:2181 --replication-factor 1 --partitions 4
-```
-
-## How to instantiate a Console Producer?
-
-### Without Key
-
-```
-./kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic
-```
-
-### With Key
-
-```
-./kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic --property "key.separator=-" --property "parse.key=true"
-```
-
-## How to instantiate a Console Consumer?
-
-### Without Key
-
-```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic library-events --from-beginning
-```
-
-### With Key
-
-```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= | " --property "print.key=true"
-```
-
-### With Key and Values
-
-- From Beginnning
-
-```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic library-events --from-begining \
---property key.deserializer=org.apache.kafka.common.serialization.IntegerDeserializer \
---property value.deserialzer=org.apache.kafka.common.serialization.StringDeserializer \
---property print.key=true \
-```
-
-
-- Latest
-
-```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic library-events \
---property key.deserializer=org.apache.kafka.common.serialization.IntegerDeserializer \
---property value.deserialzer=org.apache.kafka.common.serialization.StringDeserializer \
---property print.key=true \
-```
-
-### With ConsumerGroup
-
-```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic library-events --group console-consumer-73147
-```
-
 # Advanced Kafka CLI operations:
+
+<details><summary>Mac</summary>
+<p>
 
 ## List the topics in a cluster
 
@@ -136,7 +168,7 @@ auto.create.topics.enable=false
 - The below command can be used to describe a specific topic.
 
 ```
-./kafka-topics.sh --zookeeper localhost:2181 --topic library-events
+./kafka-topics.sh --zookeeper localhost:2181 --topic <topic-name>
 ```
 ## How to view consumer groups
 
@@ -155,3 +187,50 @@ auto.create.topics.enable=false
 ```
 ./kafka-run-class.sh kafka.tools.DumpLogSegments --deep-iteration --files /tmp/kafka-logs/test-topic-0/00000000000000000000.log
 ```
+</p>
+</details>
+
+
+<details><summary>Windows</summary>
+<p>
+
+- Make sure you are inside the **bin/windows** directory.
+
+## List the topics in a cluster
+
+```
+kafka-topics.bat --zookeeper localhost:2181 --list
+```
+
+## Describe topic
+
+- The below command can be used to describe all the topics.
+
+```
+kafka-topics.bat --zookeeper localhost:2181 --describe
+```
+
+- The below command can be used to describe a specific topic.
+
+```
+kafka-topics.bat --zookeeper localhost:2181 --topic <topic-name>
+```
+## How to view consumer groups
+
+```
+kafka-consumer-groups.bat --bootstrap-server localhost:9092 --list
+```
+
+### Consumer Groups and their Offset
+
+```
+kafka-consumer-groups.bat --bootstrap-server localhost:9092 --describe --group console-consumer-27773
+```
+
+## Viewing the Commit Log
+
+```
+kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files /tmp/kafka-logs/test-topic-0/00000000000000000000.log
+```
+</p>
+</details>
