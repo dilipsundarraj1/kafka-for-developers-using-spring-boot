@@ -1,6 +1,7 @@
-# Kafka
+# Setting Up Kafka
 
-## Setting Up Kafka
+<details><summary>Mac</summary>
+<p>
 
 -   Start up the Zookeeper.
 
@@ -13,6 +14,10 @@
 ```youtrack
 ./kafka-server-start.sh ../config/server.properties
 ```
+
+</p>
+
+</details>
 
 ## Setting Up Multiple Kafka Brokers
 
