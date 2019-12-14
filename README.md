@@ -4,4 +4,4 @@ This repository has the complete code related to kafka producers/consumers using
 
 
 
-- [SetUp-Kafka](https://github.com/dilipsundarraj1/kafka-for-developers-using-spring-boot/blob/master/SetUpKafka.md)
+- [Setup-Kafka](https://github.com/dilipsundarraj1/kafka-for-developers-using-spring-boot/blob/master/SetUpKafka.md)
