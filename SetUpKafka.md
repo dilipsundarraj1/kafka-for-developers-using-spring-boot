@@ -57,7 +57,7 @@ auto.create.topics.enable=false
 ### With Key
 
 ```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= | " --property "print.key=true"
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= - " --property "print.key=true"
 ```
 </p>
 
