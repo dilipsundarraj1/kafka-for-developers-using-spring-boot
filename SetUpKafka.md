@@ -113,7 +113,7 @@ kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic 
 ### With Key
 
 ```
-kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= | " --property "print.key=true"
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= - " --property "print.key=true"
 ```
 </p>
 
