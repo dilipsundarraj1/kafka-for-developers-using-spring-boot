@@ -59,6 +59,12 @@ auto.create.topics.enable=false
 ```
 ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= - " --property "print.key=true"
 ```
+
+### With Consumer Group
+
+```
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --group <group-name>
+```
 </p>
 
 </details>
@@ -114,6 +120,12 @@ kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic 
 
 ```
 kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --from-beginning -property "key.separator= - " --property "print.key=true"
+```
+
+### With Consumer Group
+
+```
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --group <group-name>
 ```
 </p>
 
