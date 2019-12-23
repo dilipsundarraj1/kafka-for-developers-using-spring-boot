@@ -212,6 +212,12 @@ auto.create.topics.enable=false
 ```
 ./kafka-run-class.sh kafka.tools.DumpLogSegments --deep-iteration --files /tmp/kafka-logs/test-topic-0/00000000000000000000.log
 ```
+
+## Setting the Minimum Insync Replica
+
+```
+./kafka-configs.sh --alter --zookeeper localhost:2181 --entity-type topics --entity-name test-topic --add-config min.insync.replicas=2
+```
 </p>
 </details>
 
