@@ -1,5 +1,6 @@
 package com.learnkafka.domain;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +15,10 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class LibraryEvent {
 
-    @NotNull
     private Integer libraryEventId;
-    private LibraryEventStatusEnum eventStatus;
+    private LibraryEventType libraryEventType;
     @NotNull
     @Valid
     private Book book;
+
 }
-
-
