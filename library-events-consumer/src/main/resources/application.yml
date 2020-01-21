@@ -1,27 +1,23 @@
 spring:
   profiles:
-    active: dev
+    active: local
 server:
   port: 8081
-#logging:
-#  level:
-#    root: debug
 
 ---
 spring:
-  profiles: dev
+  profiles: local
   kafka:
-    topic: library-events
-    #    template:
-    #      default-topic: library-events
+    template:
+      default-topic: library-events
     consumer:
-      bootstrap-servers:
-        - localhost:9092,localhost:9093,localhost:9094
-      #enable-auto-commit: true
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: library-events-listener-group
     producer:
+      bootstrap-servers:
+        -   localhost:9092,localhost:9093,localhost:9094
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
@@ -35,32 +31,25 @@ spring:
     console:
       enabled: true
 
+
 ---
+
 spring:
   profiles: nonprod
   kafka:
-    topic: library-events
-    #    template:
-    #      default-topic: library-events
     consumer:
-      bootstrap-servers:
-        - localhost:9092,localhost:9093,localhost:9094
-      #enable-auto-commit: true
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: library-events-listener-group
 
 ---
+
 spring:
   profiles: prod
   kafka:
-    topic: library-events
-    #    template:
-    #      default-topic: library-events
     consumer:
-      bootstrap-servers:
-        - localhost:9092,localhost:9093,localhost:9094
-      #enable-auto-commit: true
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: library-events-listener-group

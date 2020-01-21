@@ -5,6 +5,19 @@ curl -i \
 -H "Content-Type: application/json" \
 -X POST http://localhost:8080/v1/libraryevent
 
+PUT WITH ID - 1
+--------------
+curl -i \
+-d '{"libraryEventId":1,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot 2.X","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+curl -i \
+-d '{"libraryEventId":2,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot 2.X","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+
 
 PUT WITH ID
 ---------------------
