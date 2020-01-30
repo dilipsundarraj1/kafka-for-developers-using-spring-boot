@@ -1,0 +1,39 @@
+POST WITH-NULL-LIBRARY-EVENT-ID
+---------------------
+curl -i \
+-d '{"libraryEventId":null,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:8080/v1/libraryevent
+
+PUT WITH ID - 1
+--------------
+curl -i \
+-d '{"libraryEventId":1,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot 2.X","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+curl -i \
+-d '{"libraryEventId":2,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot 2.X","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+
+
+PUT WITH ID
+---------------------
+curl -i \
+-d '{"libraryEventId":123,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+curl -i \
+-d '{"libraryEventId":999,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+PUT WITHOUT ID
+---------------------
+curl -i \
+-d '{"libraryEventId":null,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent

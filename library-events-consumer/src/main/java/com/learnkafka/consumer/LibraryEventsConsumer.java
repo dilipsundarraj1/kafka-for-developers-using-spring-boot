@@ -1,33 +1,25 @@
 package com.learnkafka.consumer;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learnkafka.entity.LibraryEvent;
-import com.learnkafka.service.LibraryEventsConsumerService;
+import com.learnkafka.service.LibraryEventsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-@Slf4j
 @Component
+@Slf4j
 public class LibraryEventsConsumer {
 
     @Autowired
-    LibraryEventsConsumerService libraryEventsConsumerService;
+    private LibraryEventsService libraryEventsService;
 
-    @KafkaListener(topics = {"${spring.kafka.topic}"}
-   // , errorHandler = "libraryEventErrorHandler"
-    )
-    public void onMessage(ConsumerRecord<Integer, String> consumerRecord) throws JsonProcessingException {
-        log.info("OnMessage Record : {} ", consumerRecord);
-        libraryEventsConsumerService.processLibraryEvent(consumerRecord);
+    @KafkaListener(topics = {"library-events"})
+    public void onMessage(ConsumerRecord<Integer,String> consumerRecord) throws JsonProcessingException {
+
+        log.info("ConsumerRecord : {} ", consumerRecord );
+        libraryEventsService.processLibraryEvent(consumerRecord);
+
     }
 }

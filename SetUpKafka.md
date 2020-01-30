@@ -187,7 +187,12 @@ auto.create.topics.enable=false
 - The below command can be used to describe a specific topic.
 
 ```
-./kafka-topics.sh --zookeeper localhost:2181 --topic <topic-name>
+./kafka-topics.sh --zookeeper localhost:2181 --describe --topic <topic-name>
+```
+
+## Alter the min insync replica
+```
+./kafka-topics.sh --alter --zookeeper localhost:2181 --topic library-events --config min.insync.replicas=2
 ```
 
 ## Delete a topic
@@ -244,8 +249,14 @@ kafka-topics.bat --zookeeper localhost:2181 --describe
 - The below command can be used to describe a specific topic.
 
 ```
-kafka-topics.bat --zookeeper localhost:2181 --topic <topic-name>
+kafka-topics.bat --zookeeper localhost:2181 --describe --topic <topic-name>
 ```
+
+## Alter the min insync replica
+```
+kafka-topics.bat --alter --zookeeper localhost:2181 --topic library-events --config min.insync.replicas=2
+```
+
 
 ## Delete a topic
 

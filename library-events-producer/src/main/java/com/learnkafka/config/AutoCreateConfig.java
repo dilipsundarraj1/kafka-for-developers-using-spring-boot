@@ -16,17 +16,11 @@ import java.util.Map;
 public class AutoCreateConfig {
 
     @Bean
-    public KafkaAdmin kafkaAdmin() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        return new KafkaAdmin(configs);
-    }
-
-    @Bean
-    public NewTopic libraryEvents() {
+    public NewTopic libraryEvents(){
         return TopicBuilder.name("library-events")
-                .partitions(4)
+                .partitions(3)
                 .replicas(3)
                 .build();
     }
+
 }
