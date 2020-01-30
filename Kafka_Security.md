@@ -62,7 +62,7 @@ keytool -keystore server.keystore.jks -alias localhost -import -file cert-signed
 - This is to make sure the client is going to trust all the certs issued by CA.
 
 ```
-keytool -keystore server.truststore.jks -alias CARoot -import -file ca-cert
+keytool -keystore client.truststore.jks -alias CARoot -import -file ca-cert
 ```
 
 ## Broker SSL Settings
