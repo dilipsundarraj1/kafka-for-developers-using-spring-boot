@@ -74,6 +74,12 @@ ssl.key.password=password
 ```
 # Accessing SSL Enabled Topics using Console Producers/Consumers
 
+- Create a topic
+
+```
+./kafka-topics.sh --create --topic test-topic -zookeeper localhost:2181 --replication-factor 1 --partitions 3
+```
+
 - Create a file named **client-ssl.properties** and have the below properties configured in there.
 
 ```
