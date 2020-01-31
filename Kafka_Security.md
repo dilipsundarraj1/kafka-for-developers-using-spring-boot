@@ -71,6 +71,7 @@ keytool -keystore client.truststore.jks -alias CARoot -import -file ca-cert
 ssl.keystore.location=<location>/server.keystore.jks
 ssl.keystore.password=password
 ssl.key.password=password
+ssl.endpoint.identification.algorithm=
 ```
 # Accessing SSL Enabled Topics using Console Producers/Consumers
 
@@ -87,7 +88,6 @@ security.protocol=SSL
 ssl.truststore.location=<location>/client.truststore.jks
 ssl.truststore.password=password
 ssl.truststore.type=JKS
-ssl.endpoint.identification.algorithm=
 ```
 
 ## Producing Messages to Secured Topic
@@ -114,7 +114,7 @@ ssl.endpoint.identification.algorithm=
 ```
 
 
-## Consuming Messages from a Secured Topic
+## Consuming Messages from a Non-Secured Topic
 
 ```
 ./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9094,localhost:9094 --topic test-topic
