@@ -89,7 +89,7 @@ ssl.endpoint.identification.algorithm=
 - Command to Produce Messages to the secured topic
 
 ```
-./kafka-console-producer.sh --broker-list localhost:9095,localhost:9096,localhost:9097 --topic library-events --producer.config client-ssl.properties
+./kafka-console-producer.sh --broker-list localhost:9095,localhost:9096,localhost:9097 --topic test-topic --producer.config client-ssl.properties
 ```
 
 ## Consuming Messages from a Secured Topic
@@ -97,21 +97,21 @@ ssl.endpoint.identification.algorithm=
 - Command to Produce Messages to the secured topic
 
 ```
-./kafka-console-consumer.sh --bootstrap-server localhost:9095,localhost:9096,localhost:9097 --topic library-events --consumer.config client-ssl.properties
+./kafka-console-consumer.sh --bootstrap-server localhost:9095,localhost:9096,localhost:9097 --topic test-topic --consumer.config client-ssl.properties
 ```
 
 
 ## Producing Messages to Non-Secured Topic
 
 ```
-./kafka-console-producer.sh --broker-list localhost:9092,localhost:9094,localhost:9094 --topic library-events
+./kafka-console-producer.sh --broker-list localhost:9092,localhost:9094,localhost:9094 --topic test-topic
 ```
 
 
 ## Consuming Messages from a Secured Topic
 
 ```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9094,localhost:9094 --topic library-events
+./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9094,localhost:9094 --topic test-topic
 ```
 
 ## 2 Way Authentication
