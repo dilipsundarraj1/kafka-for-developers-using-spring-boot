@@ -110,14 +110,14 @@ ssl.truststore.type=JKS
 ## Producing Messages to Non-Secured Topic
 
 ```
-./kafka-console-producer.sh --broker-list localhost:9092,localhost:9094,localhost:9094 --topic test-topic
+./kafka-console-producer.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --topic test-topic
 ```
 
 
 ## Consuming Messages from a Non-Secured Topic
 
 ```
-./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9094,localhost:9094 --topic test-topic
+./kafka-console-consumer.sh --bootstrap-server localhost:9092,localhost:9093,localhost:9094 --topic test-topic
 ```
 
 ## 2 Way Authentication
