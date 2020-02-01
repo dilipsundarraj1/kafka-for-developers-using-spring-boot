@@ -133,14 +133,13 @@ keytool -keystore server.truststore.jks -alias CARoot -import -file ca-cert
 ```
 ssl.truststore.location=<location>/server.truststore.jks
 ssl.truststore.password=password
-ssl.endpoint.identification.algorithm=
 ssl.client.auth=required
 ```
 - Kafka Client should have the following the config in the **client-ssl.properties** file
 
 ```
 ssl.keystore.type=JKS
-ssl.keystore.location=<location>/server.keystore.jks
+ssl.keystore.location=<location>/client.keystore.jks
 ssl.keystore.password=password
 ssl.key.password=password
 ```
