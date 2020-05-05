@@ -17,10 +17,9 @@ public class AutoCreateConfig {
 
     @Bean
     public NewTopic libraryEvents(){
-        return TopicBuilder.name("library-events1")
+        return TopicBuilder.name("library-events")
                 .partitions(3)
                 .replicas(3)
-                //.config("min.insync.replicas", "2")
                 .build();
     }
 
