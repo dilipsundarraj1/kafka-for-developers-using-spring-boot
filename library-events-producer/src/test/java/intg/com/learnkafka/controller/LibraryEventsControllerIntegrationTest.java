@@ -37,7 +37,6 @@ public class LibraryEventsControllerIntegrationTest {
     @Autowired
     EmbeddedKafkaBroker embeddedKafkaBroker;
 
-
     private Consumer<Integer, String> consumer;
 
     @BeforeEach
