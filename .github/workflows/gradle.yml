@@ -22,5 +22,5 @@ jobs:
         java-version: 11
     - uses: eskatos/gradle-command-action@v1
       with:
-        build-root-directory: kafka-for-developers-using-spring-boot/library-events-producer
         arguments: build
+        build-root-directory: kafka-for-developers-using-spring-boot/library-events-producer
