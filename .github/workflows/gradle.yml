@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: kafka-for-developers
 
 on:
   push:
@@ -20,7 +20,13 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - uses: eskatos/gradle-command-action@v1
-      with:
-        arguments: build
-        build-root-directory: kafka-for-developers-using-spring-boot/library-events-producer
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Set selected color
+      run: echo '::set-env name=SELECTED_COLOR::green'      
+    - name: Present working directory
+      run: cwd      
+    - name: navigate to different directory
+      run: cd library-events-consumer
+    - name: Build with Gradle
+      run: ./gradlew build
