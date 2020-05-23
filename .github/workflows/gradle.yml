@@ -11,9 +11,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
@@ -22,8 +20,13 @@ jobs:
         java-version: 11
     - name: Set selected color
       run: echo '::set-env name=SELECTED_COLOR::green'       
-    - name: navigate to different directory
+    - name: Build Library Events Consumer
       run: |
         cd library-events-consumer
+        chmod +x gradlew 
+        ./gradlew build
+    - name: Build Library Events Producer
+      run: |
+        cd library-events-producer
         chmod +x gradlew 
         ./gradlew build
