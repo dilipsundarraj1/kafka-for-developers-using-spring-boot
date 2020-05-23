@@ -21,9 +21,7 @@ jobs:
       with:
         java-version: 11
     - name: Set selected color
-      run: echo '::set-env name=SELECTED_COLOR::green'      
-    - name: Present working directory
-      run: cwd      
+      run: echo '::set-env name=SELECTED_COLOR::green'       
     - name: navigate to different directory
       run: cd library-events-consumer
     - name: Set selected color
