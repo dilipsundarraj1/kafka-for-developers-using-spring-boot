@@ -24,7 +24,7 @@ jobs:
       run: echo '::set-env name=SELECTED_COLOR::green'       
     - name: navigate to different directory
       run: cd library-events-consumer
-    - name: Set selected color
-      run: echo '::set-env name=SELECTED_COLOR::green'
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew      
     - name: Build with Gradle
       run: ./gradlew build
