@@ -91,11 +91,11 @@ public class LibraryEventsConsumerConfig {
             if(context.getLastThrowable().getCause() instanceof RecoverableDataAccessException){
                 //invoke recovery logic
                 log.info("Inside the recoverable logic");
-               *//* Arrays.asList(context.attributeNames())
+               Arrays.asList(context.attributeNames())
                         .forEach(attributeName -> {
                             log.info("Attribute name is : {} ", attributeName);
                             log.info("Attribute Value is : {} ", context.getAttribute(attributeName));
-                        });*//*
+                        });
 
                ConsumerRecord<Integer, String> consumerRecord = (ConsumerRecord<Integer, String>) context.getAttribute("record");
                 libraryEventsService.handleRecovery(consumerRecord);
