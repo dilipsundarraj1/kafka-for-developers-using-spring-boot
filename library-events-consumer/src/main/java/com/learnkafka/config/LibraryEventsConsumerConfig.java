@@ -38,7 +38,7 @@ public class LibraryEventsConsumerConfig {
 
     @Bean
     @ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
-    ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory1(
+    ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
             ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
             ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory) {
         ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
