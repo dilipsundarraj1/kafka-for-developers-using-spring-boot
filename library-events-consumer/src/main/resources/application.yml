@@ -6,7 +6,9 @@ server:
 
 ---
 spring:
-  profiles: local
+  config:
+    activate:
+      on-profile: local
   kafka:
     template:
       default-topic: library-events
@@ -35,7 +37,9 @@ spring:
 ---
 
 spring:
-  profiles: nonprod
+  config:
+    activate:
+      on-profile: nonprod
   kafka:
     template:
       default-topic: library-events
@@ -72,7 +76,9 @@ spring:
 ---
 
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
   kafka:
     consumer:
       bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
