@@ -18,8 +18,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Set selected color
-      run: echo '::set-env name=SELECTED_COLOR::green'       
     - name: Build Library Events Consumer
       run: |
         cd library-events-consumer

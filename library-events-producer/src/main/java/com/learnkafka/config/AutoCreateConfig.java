@@ -19,7 +19,7 @@ public class AutoCreateConfig {
     public NewTopic libraryEvents(){
         return TopicBuilder.name("library-events")
                 .partitions(3)
-                .replicas(3)
+                .replicas(1)
                 .build();
     }
 
