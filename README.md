@@ -7,7 +7,7 @@ This repository has the complete code related to kafka producers/consumers using
 
 - [Setup-Kafka](https://github.com/dilipsundarraj1/kafka-for-developers-using-spring-boot/blob/master/SetUpKafka.md)
 
-- [Setup-Kafka Version 3](.SetUpKafka3.md)
+- [Setup-Kafka Version 3](SetUpKafka3.md)
 
 ## Securing your Kafka Cluster using SSL
 
