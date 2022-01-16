@@ -12,7 +12,10 @@
 ```
 ./zookeeper-server-start.sh ../config/zookeeper.properties
 ```
-
+## Entrar em: cd config/
+## Entrar em: code server.properties 
+## Filtrar por listeners
+  
 - Add the below properties in the server.properties
 
 ```
