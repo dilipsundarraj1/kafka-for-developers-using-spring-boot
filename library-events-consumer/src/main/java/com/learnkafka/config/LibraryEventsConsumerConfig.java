@@ -16,13 +16,16 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -36,6 +39,24 @@ public class LibraryEventsConsumerConfig {
     @Autowired
     KafkaProperties kafkaProperties;
 
+
+    public DefaultErrorHandler errorHandler() {
+
+        var exceptiopnToIgnorelist = List.of(
+                IllegalArgumentException.class
+        );
+
+        var defaultErrorHandler =  new DefaultErrorHandler((record, exception) -> {
+                    // recover after 3 failures, with no back off - e.g. send to a dead-letter topic
+                }, new FixedBackOff(1000L, 2L));
+                //.addNotRetryableExceptions(exceptiopnToIgnorelist);
+        exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+
+        return defaultErrorHandler;
+    }
+
+
+
     @Bean
     @ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
     ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
@@ -45,32 +66,34 @@ public class LibraryEventsConsumerConfig {
         configurer.configure(factory, kafkaConsumerFactory
                 .getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.kafkaProperties.buildConsumerProperties())));
         factory.setConcurrency(3);
-        // factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-        factory.setErrorHandler(((thrownException, data) -> {
-            log.info("Exception in consumerConfig is {} and the record is {}", thrownException.getMessage(), data);
-            //persist
-        }));
-        factory.setRetryTemplate(retryTemplate());
-        factory.setRecoveryCallback((context -> {
-            if(context.getLastThrowable().getCause() instanceof RecoverableDataAccessException){
-                //invoke recovery logic
-                log.info("Inside the recoverable logic");
-                Arrays.asList(context.attributeNames())
-                        .forEach(attributeName -> {
-                    log.info("Attribute name is : {} ", attributeName);
-                    log.info("Attribute Value is : {} ", context.getAttribute(attributeName));
-                });
-
-                ConsumerRecord<Integer, String> consumerRecord = (ConsumerRecord<Integer, String>) context.getAttribute("record");
-                libraryEventsService.handleRecovery(consumerRecord);
-            }else{
-                log.info("Inside the non recoverable logic");
-                throw new RuntimeException(context.getLastThrowable().getMessage());
-            }
-
-
-            return null;
-        }));
+        factory.setCommonErrorHandler(errorHandler());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        //factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+//        factory.setErrorHandler(((thrownException, data) -> {
+//            log.info("Exception in consumerConfig is {} and the record is {}", thrownException.getMessage(), data);
+//            //persist
+//        }));
+//        factory.setRetryTemplate(retryTemplate());
+//        factory.setRecoveryCallback((context -> {
+//            if(context.getLastThrowable().getCause() instanceof RecoverableDataAccessException){
+//                //invoke recovery logic
+//                log.info("Inside the recoverable logic");
+//                Arrays.asList(context.attributeNames())
+//                        .forEach(attributeName -> {
+//                    log.info("Attribute name is : {} ", attributeName);
+//                    log.info("Attribute Value is : {} ", context.getAttribute(attributeName));
+//                });
+//
+//                ConsumerRecord<Integer, String> consumerRecord = (ConsumerRecord<Integer, String>) context.getAttribute("record");
+//                libraryEventsService.handleRecovery(consumerRecord);
+//            }else{
+//                log.info("Inside the non recoverable logic");
+//                throw new RuntimeException(context.getLastThrowable().getMessage());
+//            }
+//
+//
+//            return null;
+//        }));
         return factory;
     }
 
