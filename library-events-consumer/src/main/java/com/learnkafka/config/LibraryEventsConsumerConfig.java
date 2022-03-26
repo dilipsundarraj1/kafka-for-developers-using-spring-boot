@@ -17,6 +17,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.RetryListener;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -46,15 +47,19 @@ public class LibraryEventsConsumerConfig {
                 IllegalArgumentException.class
         );
 
-        var defaultErrorHandler =  new DefaultErrorHandler((record, exception) -> {
-                    // recover after 3 failures, with no back off - e.g. send to a dead-letter topic
-                }, new FixedBackOff(1000L, 2L));
-                //.addNotRetryableExceptions(exceptiopnToIgnorelist);
-        exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+        var defaultErrorHandler = new DefaultErrorHandler((record, exception) -> {
+            log.info("Failed Record : {} ", record);
+        }, new FixedBackOff(1000L, 2L));
+
+         exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+
+        defaultErrorHandler.setRetryListeners(
+                (record, ex, deliveryAttempt) ->
+                        log.info("Failed Record in Retry Listener  exception : {} , deliveryAttempt : {} ", ex.getMessage(), deliveryAttempt)
+        );
 
         return defaultErrorHandler;
     }
-
 
 
     @Bean
@@ -140,7 +145,7 @@ public class LibraryEventsConsumerConfig {
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(simpleRetryPolicy());
         retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
-        return  retryTemplate;
+        return retryTemplate;
     }
 
     private RetryPolicy simpleRetryPolicy() {
@@ -150,7 +155,7 @@ public class LibraryEventsConsumerConfig {
         Map<Class<? extends Throwable>, Boolean> exceptionsMap = new HashMap<>();
         exceptionsMap.put(IllegalArgumentException.class, false);
         exceptionsMap.put(RecoverableDataAccessException.class, true);
-        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3,exceptionsMap,true);
+        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3, exceptionsMap, true);
         return simpleRetryPolicy;
     }
 }
