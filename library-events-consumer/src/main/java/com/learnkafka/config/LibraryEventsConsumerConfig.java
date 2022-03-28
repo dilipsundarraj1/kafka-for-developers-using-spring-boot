@@ -48,18 +48,26 @@ public class LibraryEventsConsumerConfig {
         );
 
         var defaultErrorHandler = new DefaultErrorHandler((record, exception) -> {
-            log.info("Failed Record : {} ", record);
-        }, new FixedBackOff(1000L, 2L));
+            log.error("Exception is : {} Failed Record : {} ", exception, record);
+            if (exception.getCause() instanceof RecoverableDataAccessException) {
+                log.info("Inside the recoverable logic");
+               // libraryEventsService.handleRecovery((ConsumerRecord<Integer, String>) record);
+            } else {
+                log.info("Inside the non recoverable logic and skipping the record : {}", record);
 
-         exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+            }
+            },new FixedBackOff(1000L, 2L));
 
-        defaultErrorHandler.setRetryListeners(
-                (record, ex, deliveryAttempt) ->
-                        log.info("Failed Record in Retry Listener  exception : {} , deliveryAttempt : {} ", ex.getMessage(), deliveryAttempt)
-        );
+            exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
 
-        return defaultErrorHandler;
-    }
+            defaultErrorHandler.setRetryListeners(
+                    (record, ex, deliveryAttempt) ->
+                            log.info("Failed Record in Retry Listener  exception : {} , deliveryAttempt : {} ", ex.getMessage(), deliveryAttempt)
+            );
+
+            return defaultErrorHandler;
+        }
+
 
 
     @Bean
