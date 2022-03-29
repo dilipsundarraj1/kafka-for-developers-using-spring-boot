@@ -20,7 +20,8 @@ spring:
       auto-offset-reset: latest
     producer:
       bootstrap-servers:
-        -   localhost:9092,localhost:9093,localhost:9094
+#        -   localhost:9092,localhost:9093,localhost:9094
+        -   localhost:9092
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:

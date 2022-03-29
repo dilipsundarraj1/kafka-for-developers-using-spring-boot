@@ -3,6 +3,7 @@ package com.learnkafka.config;
 import com.learnkafka.service.LibraryEventsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,9 +16,8 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.listener.RetryListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.*;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -40,6 +40,37 @@ public class LibraryEventsConsumerConfig {
     @Autowired
     KafkaProperties kafkaProperties;
 
+    @Autowired
+    KafkaTemplate kafkaTemplate;
+
+
+    public DeadLetterPublishingRecoverer publishingRecoverer(){
+
+                DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate
+//                        ,(r, e) -> {
+//                    if (e instanceof IllegalStateException) {
+//                        return new TopicPartition(r.topic() + ".Foo.failures", r.partition());
+//                    }
+//                    else {
+//                        return new TopicPartition(r.topic() + ".other.failures", r.partition());
+//                    }
+//                }
+                );
+
+        return recoverer;
+
+    }
+
+    ConsumerRecordRecoverer consumerRecordRecoverer = (record, exception) -> {
+        log.error("Exception is : {} Failed Record : {} ", exception, record);
+        if (exception.getCause() instanceof RecoverableDataAccessException) {
+            log.info("Inside the recoverable logic");
+            //Add any Recovery Code here.
+        } else {
+            log.info("Inside the non recoverable logic and skipping the record : {}", record);
+
+        }
+    };
 
     public DefaultErrorHandler errorHandler() {
 
@@ -47,18 +78,30 @@ public class LibraryEventsConsumerConfig {
                 IllegalArgumentException.class
         );
 
-        var defaultErrorHandler = new DefaultErrorHandler((record, exception) -> {
-            log.error("Exception is : {} Failed Record : {} ", exception, record);
-            if (exception.getCause() instanceof RecoverableDataAccessException) {
-                log.info("Inside the recoverable logic");
-               // libraryEventsService.handleRecovery((ConsumerRecord<Integer, String>) record);
-            } else {
-                log.info("Inside the non recoverable logic and skipping the record : {}", record);
+        /**
+         * Just the Custom Error Handler
+         */
+//        var defaultErrorHandler =  new DefaultErrorHandler((record, exception) -> {
+//            log.error("Exception is : {} Failed Record : {} ", exception, record);
+//            if (exception.getCause() instanceof RecoverableDataAccessException) {
+//                log.info("Inside the recoverable logic");
+//                // libraryEventsService.handleRecovery((ConsumerRecord<Integer, String>) record);
+//
+//            } else {
+//                log.info("Inside the non recoverable logic and skipping the record : {}", record);
+//
+//            }
+//        });
 
-            }
-            },new FixedBackOff(1000L, 2L));
+        /**
+         * Error Handler with the BackOff, Exceptions to Ignore, RetryListener
+         */
+        var defaultErrorHandler = new DefaultErrorHandler(
+                //consumerRecordRecoverer
+                publishingRecoverer()
+                ,new FixedBackOff(1000L, 2L));
 
-            exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+           // exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
 
             defaultErrorHandler.setRetryListeners(
                     (record, ex, deliveryAttempt) ->
@@ -67,8 +110,6 @@ public class LibraryEventsConsumerConfig {
 
             return defaultErrorHandler;
         }
-
-
 
     @Bean
     @ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
@@ -146,24 +187,24 @@ public class LibraryEventsConsumerConfig {
         return factory;
     }*/
 
-    private RetryTemplate retryTemplate() {
-
-        FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
-        fixedBackOffPolicy.setBackOffPeriod(1000);
-        RetryTemplate retryTemplate = new RetryTemplate();
-        retryTemplate.setRetryPolicy(simpleRetryPolicy());
-        retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
-        return retryTemplate;
-    }
-
-    private RetryPolicy simpleRetryPolicy() {
-
-        /*SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy();
-        simpleRetryPolicy.setMaxAttempts(3);*/
-        Map<Class<? extends Throwable>, Boolean> exceptionsMap = new HashMap<>();
-        exceptionsMap.put(IllegalArgumentException.class, false);
-        exceptionsMap.put(RecoverableDataAccessException.class, true);
-        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3, exceptionsMap, true);
-        return simpleRetryPolicy;
-    }
+//    private RetryTemplate retryTemplate() {
+//
+//        FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
+//        fixedBackOffPolicy.setBackOffPeriod(1000);
+//        RetryTemplate retryTemplate = new RetryTemplate();
+//        retryTemplate.setRetryPolicy(simpleRetryPolicy());
+//        retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
+//        return retryTemplate;
+//    }
+//
+//    private RetryPolicy simpleRetryPolicy() {
+//
+//        /*SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy();
+//        simpleRetryPolicy.setMaxAttempts(3);*/
+//        Map<Class<? extends Throwable>, Boolean> exceptionsMap = new HashMap<>();
+//        exceptionsMap.put(IllegalArgumentException.class, false);
+//        exceptionsMap.put(RecoverableDataAccessException.class, true);
+//        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3, exceptionsMap, true);
+//        return simpleRetryPolicy;
+//    }
 }
