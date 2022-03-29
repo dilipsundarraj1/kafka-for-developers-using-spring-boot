@@ -1,5 +1,6 @@
 package com.learnkafka.config;
 
+import com.learnkafka.service.FailureService;
 import com.learnkafka.service.LibraryEventsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -43,6 +44,9 @@ public class LibraryEventsConsumerConfig {
     @Autowired
     KafkaTemplate kafkaTemplate;
 
+    @Autowired
+    FailureService failureService;
+
 
     public DeadLetterPublishingRecoverer publishingRecoverer(){
 
@@ -66,6 +70,8 @@ public class LibraryEventsConsumerConfig {
         if (exception.getCause() instanceof RecoverableDataAccessException) {
             log.info("Inside the recoverable logic");
             //Add any Recovery Code here.
+            failureService.saveFailedRecord((ConsumerRecord<Integer, String>) record, exception);
+
         } else {
             log.info("Inside the non recoverable logic and skipping the record : {}", record);
 
@@ -97,11 +103,11 @@ public class LibraryEventsConsumerConfig {
          * Error Handler with the BackOff, Exceptions to Ignore, RetryListener
          */
         var defaultErrorHandler = new DefaultErrorHandler(
-                //consumerRecordRecoverer
-                publishingRecoverer()
+                consumerRecordRecoverer
+                //publishingRecoverer()
                 ,new FixedBackOff(1000L, 2L));
 
-           // exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+           exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
 
             defaultErrorHandler.setRetryListeners(
                     (record, ex, deliveryAttempt) ->

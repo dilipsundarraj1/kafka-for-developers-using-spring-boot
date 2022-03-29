@@ -5,16 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learnkafka.entity.Book;
 import com.learnkafka.entity.LibraryEvent;
 import com.learnkafka.entity.LibraryEventType;
+import com.learnkafka.jpa.FailureRecordRepository;
 import com.learnkafka.jpa.LibraryEventsRepository;
 import com.learnkafka.service.LibraryEventsService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,6 +64,10 @@ public class LibraryEventsConsumerIntegrationTest {
     @Autowired
     LibraryEventsRepository libraryEventsRepository;
 
+
+    @Autowired
+    FailureRecordRepository failureRecordRepository;
+
     @Autowired
     ObjectMapper objectMapper;
 
@@ -85,11 +87,7 @@ public class LibraryEventsConsumerIntegrationTest {
     void tearDown() {
 
         libraryEventsRepository.deleteAll();
-
-//        for (MessageListenerContainer messageListenerContainer : endpointRegistry.getListenerContainers()) {
-//            messageListenerContainer.
-//
-//        }
+        failureRecordRepository.deleteAll();
 
     }
 
@@ -193,6 +191,7 @@ public class LibraryEventsConsumerIntegrationTest {
     }
 
     @Test
+    @Disabled
     void publishModifyLibraryEvent_000_LibraryEventId_deadletterTopic() throws JsonProcessingException, InterruptedException, ExecutionException {
         //given
         Integer libraryEventId = 000;
@@ -220,6 +219,29 @@ public class LibraryEventsConsumerIntegrationTest {
                 .forEach(header -> {
                     System.out.println("Header Key : "+ header.key() + ", Header Value : " + new String(header.value()));
                 });
+    }
+
+    @Test
+    void publishModifyLibraryEvent_000_LibraryEventId_failureRecord() throws JsonProcessingException, InterruptedException, ExecutionException {
+        //given
+        Integer libraryEventId = 000;
+        String json = "{\"libraryEventId\":" + libraryEventId + ",\"libraryEventType\":\"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
+        kafkaTemplate.sendDefault(libraryEventId, json).get();
+        //when
+        CountDownLatch latch = new CountDownLatch(1);
+        latch.await(5, TimeUnit.SECONDS);
+
+
+        verify(libraryEventsConsumerSpy, times(3)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventsServiceSpy, times(3)).processLibraryEvent(isA(ConsumerRecord.class));
+
+
+        var failureCount = failureRecordRepository.count();
+        assertEquals(1, failureCount);
+        failureRecordRepository.findAll().forEach(failureRecord -> {
+            System.out.println("failureRecord : "+ failureRecord);
+        });
+
     }
 
 }
