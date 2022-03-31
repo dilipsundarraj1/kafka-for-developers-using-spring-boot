@@ -19,6 +19,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.*;
+import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -102,10 +103,22 @@ public class LibraryEventsConsumerConfig {
         /**
          * Error Handler with the BackOff, Exceptions to Ignore, RetryListener
          */
+
+        ExponentialBackOffWithMaxRetries expBackOff = new ExponentialBackOffWithMaxRetries(2);
+        expBackOff.setInitialInterval(1_000L);
+        expBackOff.setMultiplier(2.0);
+        expBackOff.setMaxInterval(2_000L);
+
+        var fixedBackOff = new FixedBackOff(1000L, 2L);
+
+
         var defaultErrorHandler = new DefaultErrorHandler(
                 consumerRecordRecoverer
                 //publishingRecoverer()
-                ,new FixedBackOff(1000L, 2L));
+                ,
+              fixedBackOff
+                //expBackOff
+        );
 
            exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
 
@@ -127,7 +140,7 @@ public class LibraryEventsConsumerConfig {
                 .getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.kafkaProperties.buildConsumerProperties())));
         factory.setConcurrency(3);
         factory.setCommonErrorHandler(errorHandler());
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        //factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         //factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 //        factory.setErrorHandler(((thrownException, data) -> {
 //            log.info("Exception in consumerConfig is {} and the record is {}", thrownException.getMessage(), data);
