@@ -52,14 +52,19 @@ public class LibraryEventsConsumerConfig {
     public DeadLetterPublishingRecoverer publishingRecoverer(){
 
                 DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate
-//                        ,(r, e) -> {
-//                    if (e instanceof IllegalStateException) {
-//                        return new TopicPartition(r.topic() + ".Foo.failures", r.partition());
-//                    }
-//                    else {
-//                        return new TopicPartition(r.topic() + ".other.failures", r.partition());
-//                    }
-//                }
+                        ,(r, e) -> {
+                    log.error("Exception in publishingRecoverer : {} ", e.getMessage(), e);
+                    if (e.getCause() instanceof RecoverableDataAccessException) {
+                        var topicName = r.topic() + ".RETRY";
+                        log.info("TOpic name is : {}", topicName );
+                        return new TopicPartition(topicName, r.partition());
+                    }
+                    else {
+                        var topicName = r.topic() + ".DLT";
+                        log.info("Inside the else block name is : {}", topicName );
+                        return new TopicPartition(topicName, r.partition());
+                    }
+                }
                 );
 
         return recoverer;
@@ -113,8 +118,8 @@ public class LibraryEventsConsumerConfig {
 
 
         var defaultErrorHandler = new DefaultErrorHandler(
-                consumerRecordRecoverer
-                //publishingRecoverer()
+               // consumerRecordRecoverer
+                publishingRecoverer()
                 ,
               fixedBackOff
                 //expBackOff
