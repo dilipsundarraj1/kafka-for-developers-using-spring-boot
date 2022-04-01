@@ -21,16 +21,9 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
-import org.springframework.retry.RetryPolicy;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.backoff.FixedBackOff;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @EnableKafka
@@ -49,10 +42,10 @@ public class LibraryEventsConsumerConfig {
     @Autowired
     FailureService failureService;
 
-    @Value("${topics.retry}")
+    @Value("${topics.retry:library-events.RETRY}")
     private String retryTopic;
 
-    @Value("${topics.dlt}")
+    @Value("${topics.dlt:library-events.DLT}")
     private String deadLetterTopic;
 
 
