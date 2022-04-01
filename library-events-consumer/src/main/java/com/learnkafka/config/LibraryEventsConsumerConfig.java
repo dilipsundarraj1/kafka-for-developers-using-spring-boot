@@ -7,6 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -48,6 +49,12 @@ public class LibraryEventsConsumerConfig {
     @Autowired
     FailureService failureService;
 
+    @Value("${topics.retry}")
+    private String retryTopic;
+
+    @Value("${topics.dlt}")
+    private String deadLetterTopic;
+
 
     public DeadLetterPublishingRecoverer publishingRecoverer() {
 
@@ -55,12 +62,10 @@ public class LibraryEventsConsumerConfig {
                 , (r, e) -> {
             log.error("Exception in publishingRecoverer : {} ", e.getMessage(), e);
             if (e.getCause() instanceof RecoverableDataAccessException) {
-                var topicName = r.topic() + ".RETRY";
-                return new TopicPartition(topicName, r.partition());
+                return new TopicPartition(retryTopic, r.partition());
             } else {
                 var topicName = r.topic() + ".DLT";
-                log.info("Inside the DLT topic : " + topicName);
-                return new TopicPartition(topicName, r.partition());
+                return new TopicPartition(deadLetterTopic, r.partition());
             }
         }
         );
@@ -88,25 +93,6 @@ public class LibraryEventsConsumerConfig {
                 IllegalArgumentException.class
         );
 
-        /**
-         * Just the Custom Error Handler
-         */
-//        var defaultErrorHandler =  new DefaultErrorHandler((record, exception) -> {
-//            log.error("Exception is : {} Failed Record : {} ", exception, record);
-//            if (exception.getCause() instanceof RecoverableDataAccessException) {
-//                log.info("Inside the recoverable logic");
-//                // libraryEventsService.handleRecovery((ConsumerRecord<Integer, String>) record);
-//
-//            } else {
-//                log.info("Inside the non recoverable logic and skipping the record : {}", record);
-//
-//            }
-//        });
-
-        /**
-         * Error Handler with the BackOff, Exceptions to Ignore, RetryListener
-         */
-
         ExponentialBackOffWithMaxRetries expBackOff = new ExponentialBackOffWithMaxRetries(2);
         expBackOff.setInitialInterval(1_000L);
         expBackOff.setMultiplier(2.0);
@@ -114,6 +100,14 @@ public class LibraryEventsConsumerConfig {
 
         var fixedBackOff = new FixedBackOff(1000L, 2L);
 
+        /**
+         * Just the Custom Error Handler
+         */
+       // var defaultErrorHandler =  new DefaultErrorHandler(fixedBackOff);
+
+        /**
+         * Error Handler with the BackOff, Exceptions to Ignore, RetryListener
+         */
 
         var defaultErrorHandler = new DefaultErrorHandler(
                //  consumerRecordRecoverer

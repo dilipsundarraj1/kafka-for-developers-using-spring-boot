@@ -17,6 +17,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
@@ -46,15 +47,20 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @EmbeddedKafka(topics = {"library-events"
         , "library-events.RETRY"
-        ,"library-events.DLT"
+        , "library-events.DLT"
 }
         , partitions = 3)
 @TestPropertySource(properties = {"spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}"
-        , "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}"})
+        , "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}"
+        , "retryListener.startup=false"})
 public class LibraryEventsConsumerIntegrationTest {
 
-    String retryTopic = "library-events.RETRY";
-    String deadLetterTopic = "library-events.DLT";
+
+    @Value("${topics.retry}")
+    private String retryTopic;
+
+    @Value("${topics.dlt}")
+    private String deadLetterTopic;
 
     @Autowired
     EmbeddedKafkaBroker embeddedKafkaBroker;
@@ -86,9 +92,18 @@ public class LibraryEventsConsumerIntegrationTest {
     @BeforeEach
     void setUp() {
 
-        for (MessageListenerContainer messageListenerContainer : endpointRegistry.getListenerContainers()) {
-            ContainerTestUtils.waitForAssignment(messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
-        }
+        var container = endpointRegistry.getListenerContainers()
+                .stream().filter(messageListenerContainer ->
+                        Objects.equals(messageListenerContainer.getGroupId(), "library-events-listener-group"))
+                .collect(Collectors.toList()).get(0);
+        ContainerTestUtils.waitForAssignment(container, embeddedKafkaBroker.getPartitionsPerTopic());
+//        for (MessageListenerContainer messageListenerContainer : endpointRegistry.getListenerContainers()) {
+//            System.out.println("Group Id : "+ messageListenerContainer.getGroupId());
+//            if(Objects.equals(messageListenerContainer.getGroupId(), "library-events-listener-group")){
+//                System.out.println("Waiting for assignment");
+//                ContainerTestUtils.waitForAssignment(messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
+//            }
+//        }
 
     }
 
@@ -162,7 +177,7 @@ public class LibraryEventsConsumerIntegrationTest {
         latch.await(5, TimeUnit.SECONDS);
 
 
-         verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
         verify(libraryEventsServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
 
         Optional<LibraryEvent> libraryEventOptional = libraryEventsRepository.findById(libraryEventId);
@@ -179,7 +194,7 @@ public class LibraryEventsConsumerIntegrationTest {
         assertEquals(json, consumerRecord.value());
         consumerRecord.headers()
                 .forEach(header -> {
-                    System.out.println("Header Key : "+ header.key() + ", Header Value : " + new String(header.value()));
+                    System.out.println("Header Key : " + header.key() + ", Header Value : " + new String(header.value()));
                 });
 
 
@@ -203,22 +218,20 @@ public class LibraryEventsConsumerIntegrationTest {
         consumer = new DefaultKafkaConsumerFactory<>(configs, new IntegerDeserializer(), new StringDeserializer()).createConsumer();
         embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, deadLetterTopic);
 
-
         ConsumerRecords<Integer, String> consumerRecords = KafkaTestUtils.getRecords(consumer);
 
         var deadletterList = new ArrayList<ConsumerRecord<Integer, String>>();
-        consumerRecords.forEach((record)->{
-            if(record.topic().equals(deadLetterTopic)){
+        consumerRecords.forEach((record) -> {
+            if (record.topic().equals(deadLetterTopic)) {
                 deadletterList.add(record);
             }
         });
 
         var finalList = deadletterList.stream()
-                .filter(record-> record.value().equals(json))
+                .filter(record -> record.value().equals(json))
                 .collect(Collectors.toList());
 
-        System.out.println("finalList : " + finalList);
-        assert  finalList.size() == 1;
+        assert finalList.size() == 1;
     }
 
     @Test
@@ -247,9 +260,13 @@ public class LibraryEventsConsumerIntegrationTest {
         CountDownLatch latch = new CountDownLatch(1);
         latch.await(3, TimeUnit.SECONDS);
 
+        // Without Retry Listener
+//        verify(libraryEventsConsumerSpy, times(3)).onMessage(isA(ConsumerRecord.class));
+//        verify(libraryEventsServiceSpy, times(3)).processLibraryEvent(isA(ConsumerRecord.class));
 
-        verify(libraryEventsConsumerSpy, times(3)).onMessage(isA(ConsumerRecord.class));
-        verify(libraryEventsServiceSpy, times(3)).processLibraryEvent(isA(ConsumerRecord.class));
+        //with Retry listener
+        verify(libraryEventsConsumerSpy, atLeast(3)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventsServiceSpy, atLeast(3)).processLibraryEvent(isA(ConsumerRecord.class));
 
 
         Map<String, Object> configs = new HashMap<>(KafkaTestUtils.consumerProps("group1", "true", embeddedKafkaBroker));
@@ -263,7 +280,7 @@ public class LibraryEventsConsumerIntegrationTest {
         assertEquals(json, consumerRecord.value());
         consumerRecord.headers()
                 .forEach(header -> {
-                    System.out.println("Header Key : "+ header.key() + ", Header Value : " + new String(header.value()));
+                    System.out.println("Header Key : " + header.key() + ", Header Value : " + new String(header.value()));
                 });
     }
 
@@ -286,7 +303,7 @@ public class LibraryEventsConsumerIntegrationTest {
         var failureCount = failureRecordRepository.count();
         assertEquals(1, failureCount);
         failureRecordRepository.findAll().forEach(failureRecord -> {
-            System.out.println("failureRecord : "+ failureRecord);
+            System.out.println("failureRecord : " + failureRecord);
         });
 
     }

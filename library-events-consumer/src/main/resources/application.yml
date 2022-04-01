@@ -3,9 +3,10 @@ spring:
     active: local
 server:
   port: 8081
-kafka:
-  broker:
-    log.dir : /tmp/kafkatest
+topics:
+  retry: 'library-events.RETRY'
+  dlt: 'library-events.DLT'
+
 ---
 spring:
   config:
@@ -36,7 +37,6 @@ spring:
   h2:
     console:
       enabled: true
-
 
 ---
 
