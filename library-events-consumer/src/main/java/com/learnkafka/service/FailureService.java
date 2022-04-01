@@ -15,8 +15,8 @@ public class FailureService {
         this.failureRecordRepository = failureRecordRepository;
     }
 
-    public void saveFailedRecord(ConsumerRecord<Integer, String> record, Exception exception){
-        var failureRecord = new FailureRecord(null,record.value(), exception.getCause().getMessage());
+    public void saveFailedRecord(ConsumerRecord<Integer, String> record, Exception exception, String recordStatus){
+        var failureRecord = new FailureRecord(null,record.value(), exception.getCause().getMessage(), recordStatus);
 
         failureRecordRepository.save(failureRecord);
 

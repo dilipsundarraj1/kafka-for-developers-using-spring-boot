@@ -19,5 +19,6 @@ public class FailureRecord {
     private Integer bookId;
     private String errorRecord;
     private String exception;
+    private String status;
 
 }

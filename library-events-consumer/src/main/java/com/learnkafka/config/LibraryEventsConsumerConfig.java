@@ -30,6 +30,8 @@ import java.util.List;
 @Slf4j
 public class LibraryEventsConsumerConfig {
 
+    public static final String RETRY = "RETRY";
+    public static final String DEAD = "DEAD";
     @Autowired
     LibraryEventsService libraryEventsService;
 
@@ -72,7 +74,7 @@ public class LibraryEventsConsumerConfig {
         if (exception.getCause() instanceof RecoverableDataAccessException) {
             log.info("Inside the recoverable logic");
             //Add any Recovery Code here.
-            failureService.saveFailedRecord((ConsumerRecord<Integer, String>) record, exception);
+            failureService.saveFailedRecord((ConsumerRecord<Integer, String>) record, exception, RETRY);
 
         } else {
             log.info("Inside the non recoverable logic and skipping the record : {}", record);
