@@ -9,6 +9,7 @@ import com.learnkafka.jpa.FailureRecordRepository;
 import com.learnkafka.jpa.LibraryEventsRepository;
 import com.learnkafka.service.LibraryEventsService;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
@@ -50,7 +51,6 @@ import static org.mockito.Mockito.*;
         , partitions = 3)
 @TestPropertySource(properties = {"spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}"
         , "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LibraryEventsConsumerIntegrationTest {
 
     String retryTopic = "library-events.RETRY";
@@ -162,8 +162,8 @@ public class LibraryEventsConsumerIntegrationTest {
         latch.await(5, TimeUnit.SECONDS);
 
 
-        // verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
-        //verify(libraryEventsServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
+         verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventsServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
 
         Optional<LibraryEvent> libraryEventOptional = libraryEventsRepository.findById(libraryEventId);
         assertFalse(libraryEventOptional.isPresent());

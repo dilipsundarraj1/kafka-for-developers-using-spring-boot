@@ -17,7 +17,9 @@ public class LibraryEventsConsumer {
     @Autowired
     private LibraryEventsService libraryEventsService;
 
-    @KafkaListener(topics = {"library-events", "library-events.RETRY"})
+    @KafkaListener(topics = {"library-events"
+           // , "library-events.RETRY"
+    })
     //@KafkaHandler()
     public void onMessage(ConsumerRecord<Integer,String> consumerRecord) throws JsonProcessingException {
 
