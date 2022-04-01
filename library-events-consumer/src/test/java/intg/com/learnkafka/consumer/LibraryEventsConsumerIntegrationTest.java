@@ -26,6 +26,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.*;
@@ -40,10 +41,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
+
 @SpringBootTest
-@EmbeddedKafka(topics = {"library-events", "library-events.RETRY","library-events.DLT" }, partitions = 3)
+@EmbeddedKafka(topics = {"library-events"
+        , "library-events.RETRY"
+        ,"library-events.DLT"
+}
+        , partitions = 3)
 @TestPropertySource(properties = {"spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}"
         , "spring.kafka.consumer.bootstrap-servers=${spring.embedded.kafka.brokers}"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LibraryEventsConsumerIntegrationTest {
 
     String retryTopic = "library-events.RETRY";
@@ -83,7 +90,6 @@ public class LibraryEventsConsumerIntegrationTest {
             ContainerTestUtils.waitForAssignment(messageListenerContainer, embeddedKafkaBroker.getPartitionsPerTopic());
         }
 
-        Mockito.reset(libraryEventsServiceSpy);
     }
 
     @AfterEach
@@ -231,7 +237,7 @@ public class LibraryEventsConsumerIntegrationTest {
     }
 
     @Test
-    //@Disabled
+        //@Disabled
     void publishModifyLibraryEvent_000_LibraryEventId_deadletterTopic() throws JsonProcessingException, InterruptedException, ExecutionException {
         //given
         Integer libraryEventId = 000;

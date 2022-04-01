@@ -49,23 +49,20 @@ public class LibraryEventsConsumerConfig {
     FailureService failureService;
 
 
-    public DeadLetterPublishingRecoverer publishingRecoverer(){
+    public DeadLetterPublishingRecoverer publishingRecoverer() {
 
-                DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate
-                        ,(r, e) -> {
-                    log.error("Exception in publishingRecoverer : {} ", e.getMessage(), e);
-                    if (e.getCause() instanceof RecoverableDataAccessException) {
-                        var topicName = r.topic() + ".RETRY";
-                        log.info("TOpic name is : {}", topicName );
-                        return new TopicPartition(topicName, r.partition());
-                    }
-                    else {
-                        var topicName = r.topic() + ".DLT";
-                        log.info("Inside the else block name is : {}", topicName );
-                        return new TopicPartition(topicName, r.partition());
-                    }
-                }
-                );
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate
+                , (r, e) -> {
+            log.error("Exception in publishingRecoverer : {} ", e.getMessage(), e);
+            if (e.getCause() instanceof RecoverableDataAccessException) {
+                var topicName = r.topic() + ".RETRY";
+                return new TopicPartition(topicName, r.partition());
+            } else {
+                var topicName = r.topic() + ".DLT";
+                return new TopicPartition(topicName, r.partition());
+            }
+        }
+        );
 
         return recoverer;
 
@@ -118,22 +115,22 @@ public class LibraryEventsConsumerConfig {
 
 
         var defaultErrorHandler = new DefaultErrorHandler(
-               // consumerRecordRecoverer
+                // consumerRecordRecoverer
                 publishingRecoverer()
                 ,
-              fixedBackOff
+                fixedBackOff
                 //expBackOff
         );
 
-           exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
+        exceptiopnToIgnorelist.forEach(defaultErrorHandler::addNotRetryableExceptions);
 
-            defaultErrorHandler.setRetryListeners(
-                    (record, ex, deliveryAttempt) ->
-                            log.info("Failed Record in Retry Listener  exception : {} , deliveryAttempt : {} ", ex.getMessage(), deliveryAttempt)
-            );
+        defaultErrorHandler.setRetryListeners(
+                (record, ex, deliveryAttempt) ->
+                        log.info("Failed Record in Retry Listener  exception : {} , deliveryAttempt : {} ", ex.getMessage(), deliveryAttempt)
+        );
 
-            return defaultErrorHandler;
-        }
+        return defaultErrorHandler;
+    }
 
     @Bean
     @ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")

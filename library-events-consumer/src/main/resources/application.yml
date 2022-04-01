@@ -3,7 +3,9 @@ spring:
     active: local
 server:
   port: 8081
-
+kafka:
+  broker:
+    log.dir : /tmp/kafkatest
 ---
 spring:
   config:
