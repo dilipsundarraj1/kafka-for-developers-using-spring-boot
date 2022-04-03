@@ -31,6 +31,7 @@ import java.util.List;
 public class LibraryEventsConsumerConfig {
 
     public static final String RETRY = "RETRY";
+    public static final String SUCCESS = "SUCCESS";
     public static final String DEAD = "DEAD";
     @Autowired
     LibraryEventsService libraryEventsService;
@@ -59,7 +60,6 @@ public class LibraryEventsConsumerConfig {
             if (e.getCause() instanceof RecoverableDataAccessException) {
                 return new TopicPartition(retryTopic, r.partition());
             } else {
-                var topicName = r.topic() + ".DLT";
                 return new TopicPartition(deadLetterTopic, r.partition());
             }
         }
@@ -105,8 +105,8 @@ public class LibraryEventsConsumerConfig {
          */
 
         var defaultErrorHandler = new DefaultErrorHandler(
-               //  consumerRecordRecoverer
-                publishingRecoverer()
+                consumerRecordRecoverer
+                //publishingRecoverer()
                 ,
                 fixedBackOff
                 //expBackOff

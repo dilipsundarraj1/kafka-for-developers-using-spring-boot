@@ -26,8 +26,8 @@ class FailureRecordRepositoryTest {
     public void setUp(){
         var record = "{\"libraryEventId\":1,\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot 2.X\",\"bookAuthor\":\"Dilip\"}}";
 
-        var failureRecord = new FailureRecord(null, record, "exception occurred", LibraryEventsConsumerConfig.RETRY);
-        var failureRecord1= new FailureRecord(null, record, "exception occurred", LibraryEventsConsumerConfig.DEAD);
+        var failureRecord = new FailureRecord(null,"library-events", 123, record,1,0L, "exception occurred", LibraryEventsConsumerConfig.RETRY);
+        var failureRecord1= new FailureRecord(null,"library-events", 123, record,1,1L, "exception occurred",LibraryEventsConsumerConfig.DEAD);
 
         failureRecordRepository.saveAll(List.of(failureRecord, failureRecord1));
     }

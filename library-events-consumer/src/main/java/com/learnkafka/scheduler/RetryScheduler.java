@@ -3,6 +3,7 @@ package com.learnkafka.scheduler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learnkafka.config.LibraryEventsConsumerConfig;
+import com.learnkafka.entity.FailureRecord;
 import com.learnkafka.entity.LibraryEvent;
 import com.learnkafka.jpa.FailureRecordRepository;
 import com.learnkafka.service.LibraryEventsService;
@@ -34,11 +35,25 @@ public class RetryScheduler {
                     try {
                         var libraryEvent = objectMapper.readValue(failureRecord.getErrorRecord(), LibraryEvent.class);
                         //libraryEventsService.processLibraryEvent();
+                        var consumerRecord = buildConsumerRecord(failureRecord);
+                        libraryEventsService.processLibraryEvent(consumerRecord);
+                        failureRecord.setStatus(LibraryEventsConsumerConfig.SUCCESS);
                     } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                        log.error("JsonProcessingException in retryFailedRecords : ", e);
+                        failureRecord.setStatus(LibraryEventsConsumerConfig.DEAD);
+                    }catch (Exception e){
+                        log.error("Exception in retryFailedRecords : ", e);
                     }
 
                 });
+
+    }
+
+    private ConsumerRecord<Integer, String> buildConsumerRecord(FailureRecord failureRecord) {
+
+        return new ConsumerRecord<>(failureRecord.getTopic(),
+                failureRecord.getPartition(), failureRecord.getOffset_value(), failureRecord.getKey(),
+                failureRecord.getErrorRecord());
 
     }
 }
