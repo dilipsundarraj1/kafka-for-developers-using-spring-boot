@@ -285,7 +285,7 @@ public class LibraryEventsConsumerIntegrationTest {
     }
 
     @Test
-   // @Disabled
+    @Disabled
     void publishModifyLibraryEvent_000_LibraryEventId_failureRecord() throws JsonProcessingException, InterruptedException, ExecutionException {
         //given
         Integer libraryEventId = 000;

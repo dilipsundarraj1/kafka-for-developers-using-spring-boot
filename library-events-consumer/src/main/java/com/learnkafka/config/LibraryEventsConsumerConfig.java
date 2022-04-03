@@ -74,7 +74,7 @@ public class LibraryEventsConsumerConfig {
         if (exception.getCause() instanceof RecoverableDataAccessException) {
             log.info("Inside the recoverable logic");
             //Add any Recovery Code here.
-            failureService.saveFailedRecord((ConsumerRecord<Integer, String>) record, exception, RETRY);
+            //failureService.saveFailedRecord((ConsumerRecord<Integer, String>) record, exception, RETRY);
 
         } else {
             log.info("Inside the non recoverable logic and skipping the record : {}", record);
@@ -105,8 +105,8 @@ public class LibraryEventsConsumerConfig {
          */
 
         var defaultErrorHandler = new DefaultErrorHandler(
-                consumerRecordRecoverer
-                //publishingRecoverer()
+                //consumerRecordRecoverer
+                publishingRecoverer()
                 ,
                 fixedBackOff
                 //expBackOff
