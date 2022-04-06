@@ -235,9 +235,9 @@ public class LibraryEventsConsumerIntegrationTest {
     }
 
     @Test
-    void publishModifyLibraryEvent_000_LibraryEventId() throws JsonProcessingException, InterruptedException, ExecutionException {
+    void publishModifyLibraryEvent_999_LibraryEventId() throws JsonProcessingException, InterruptedException, ExecutionException {
         //given
-        Integer libraryEventId = 000;
+        Integer libraryEventId = 999;
         String json = "{\"libraryEventId\":" + libraryEventId + ",\"libraryEventType\":\"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
         kafkaTemplate.sendDefault(libraryEventId, json).get();
         //when
@@ -251,9 +251,9 @@ public class LibraryEventsConsumerIntegrationTest {
 
     @Test
         //@Disabled
-    void publishModifyLibraryEvent_000_LibraryEventId_deadletterTopic() throws JsonProcessingException, InterruptedException, ExecutionException {
+    void publishModifyLibraryEvent_999_LibraryEventId_deadletterTopic() throws JsonProcessingException, InterruptedException, ExecutionException {
         //given
-        Integer libraryEventId = 000;
+        Integer libraryEventId = 999;
         String json = "{\"libraryEventId\":" + libraryEventId + ",\"libraryEventType\":\"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
         kafkaTemplate.sendDefault(libraryEventId, json).get();
         //when
@@ -286,9 +286,9 @@ public class LibraryEventsConsumerIntegrationTest {
 
     @Test
     @Disabled
-    void publishModifyLibraryEvent_000_LibraryEventId_failureRecord() throws JsonProcessingException, InterruptedException, ExecutionException {
+    void publishModifyLibraryEvent_999_LibraryEventId_failureRecord() throws JsonProcessingException, InterruptedException, ExecutionException {
         //given
-        Integer libraryEventId = 000;
+        Integer libraryEventId = 999;
         String json = "{\"libraryEventId\":" + libraryEventId + ",\"libraryEventType\":\"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
         kafkaTemplate.sendDefault(libraryEventId, json).get();
         //when
