@@ -79,7 +79,7 @@ public class LibraryEventProducerUnitTest {
 
         ProducerRecord<Integer, String> producerRecord = new ProducerRecord("library-events", libraryEvent.getLibraryEventId(),record );
         RecordMetadata recordMetadata = new RecordMetadata(new TopicPartition("library-events", 1),
-                1,1,342,System.currentTimeMillis(), 1, 2);
+                1,1,System.currentTimeMillis(), 1, 2);
         SendResult<Integer, String> sendResult = new SendResult<Integer, String>(producerRecord,recordMetadata);
 
         future.set(sendResult);
