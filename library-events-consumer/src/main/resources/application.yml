@@ -3,6 +3,9 @@ spring:
     active: local
 server:
   port: 8081
+topics:
+  retry: 'library-events.RETRY'
+  dlt: 'library-events.DLT'
 
 ---
 spring:
@@ -17,14 +20,18 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: library-events-listener-group
+      auto-offset-reset: latest
     producer:
       bootstrap-servers:
-        -   localhost:9092,localhost:9093,localhost:9094
+#        -   localhost:9092,localhost:9093,localhost:9094
+        -   localhost:9092
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
+    username: postgres
+    password: password
   jpa:
     database: h2
     database-platform: org.hibernate.dialect.H2Dialect
@@ -32,7 +39,6 @@ spring:
   h2:
     console:
       enabled: true
-
 
 ---
 

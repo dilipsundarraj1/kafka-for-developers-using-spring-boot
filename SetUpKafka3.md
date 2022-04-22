@@ -65,6 +65,13 @@ auto.create.topics.enable=false
 ```
 ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --group <group-name>
 ```
+
+### Consume messages With Kafka Headers
+
+```
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic library-events.DLT --from-beginning --property print.headers=true --property print.timestamp=true
+```
+
 </p>
 
 </details>
@@ -127,6 +134,13 @@ kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic 
 ```
 kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test-topic --group <group-name>
 ```
+
+### Consume messages With Kafka Headers
+
+```
+kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic library-events.DLT --from-beginning --property print.headers=true --property print.timestamp=true
+```
+
 </p>
 
 </details>

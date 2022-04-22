@@ -31,9 +31,18 @@ curl -i \
 -H "Content-Type: application/json" \
 -X PUT http://localhost:8080/v1/libraryevent
 
+curl -i \
+-d '{"libraryEventId":2,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot","bookAuthor":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+
 PUT WITHOUT ID
 ---------------------
 curl -i \
 -d '{"libraryEventId":null,"book":{"bookId":456,"bookName":"Kafka Using Spring Boot","bookAuthor":"Dilip"}}' \
 -H "Content-Type: application/json" \
 -X PUT http://localhost:8080/v1/libraryevent
+
+
+./kafka-topics.sh --create --topic library-events.DLT --replication-factor 1 --partitions 4 --bootstrap-server localhost:9092
