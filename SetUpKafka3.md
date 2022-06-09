@@ -209,6 +209,11 @@ auto.create.topics.enable=false
 ./kafka-configs.sh  --bootstrap-server localhost:9092 --entity-type topics --entity-name library-events --alter --add-config min.insync.replicas=2
 ```
 
+## Alter the partitions of a topic
+```
+./kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic test-topic --partitions 40
+```
+
 ## Delete a topic
 
 ```
@@ -270,7 +275,10 @@ kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic <topic-nam
 ```
 kafka-configs.bat --bootstrap-server localhost:9092 --entity-type topics --entity-name library-events --alter --add-config min.insync.replicas=2
 ```
-
+## Alter the partitions of a topic
+```
+kafka-configs.bat --bootstrap-server localhost:9092 --alter --topic test-topic --partitions 40
+```
 
 ## Delete a topic
 
