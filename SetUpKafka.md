@@ -93,6 +93,11 @@ kafka-server-start.bat ..\..\config\server.properties
 ```
 kafka-topics.bat --create --topic test-topic -zookeeper localhost:2181 --replication-factor 1 --partitions 4
 ```
+  
+## For Newer Versions of Kafka
+```
+kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test-topic
+```  
 
 ## How to instantiate a Console Producer?
 
