@@ -29,7 +29,7 @@ auto.create.topics.enable=false
 ## How to create a topic ?
 
 ```
-./kafka-topics.sh --create --topic test-topic -zookeeper localhost:2181 --replication-factor 1 --partitions 4
+./kafka-topics.sh --create --topic test-topic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 4
 ```
 
 ## How to instantiate a Console Producer?
