@@ -54,10 +54,38 @@ kafka-console-producer --bootstrap-server kafka1:19092 \
                        --property "key.separator=-" --property "parse.key=true"
 ```
 
+- Consuming messages with Key and Value from a topic.
+
 ```
 docker exec --interactive --tty kafka1  \
 kafka-console-consumer --bootstrap-server kafka1:19092 \
                        --topic test-topic \
                        --from-beginning \
                        --property "key.separator= - " --property "print.key=true"
+```
+
+## List the topics in a cluster
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-topics --bootstrap-server kafka1:19092 --list
+
+```
+
+## Describe topic
+
+- Command to describe all the Kafka topics.
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-topics --bootstrap-server kafka1:19092 --describe
+```
+
+- Command to describe all the Kafka topics.
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-topics --bootstrap-server kafka1:19092 --describe \
+--topic test-topic
+
 ```
