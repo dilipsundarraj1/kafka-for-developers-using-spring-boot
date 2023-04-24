@@ -131,3 +131,27 @@ docker exec --interactive --tty kafka1  \
 kafka-consumer-groups --bootstrap-server kafka1:19092 \
 --describe --group console-consumer-41911
 ```
+
+## Log file
+
+- The config file is present in the below path.
+
+```
+/etc/kafka/server.properties
+```
+
+- The log file is present in the below path.
+
+```
+/var/lib/kafka/data/
+```
+
+### How to view the commit log?
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-run-class kafka.tools.DumpLogSegments \
+--deep-iteration \
+--files /var/lib/kafka/data/test-topic-0/00000000000000000000.log
+
+```
