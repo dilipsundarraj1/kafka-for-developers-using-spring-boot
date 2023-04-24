@@ -64,7 +64,26 @@ kafka-console-consumer --bootstrap-server kafka1:19092 \
                        --property "key.separator= - " --property "print.key=true"
 ```
 
-## List the topics in a cluster
+### Consume Messages using Consumer Groups
+
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-console-consumer --bootstrap-server kafka1:19092 \
+                       --topic test-topic --group console-consumer-41911\
+                       --property "key.separator= - " --property "print.key=true"
+```
+
+- Example Messages:
+
+```
+a-abc
+b-bus
+```
+
+## Advanced Kafka Commands
+
+### List the topics in a cluster
 
 ```
 docker exec --interactive --tty kafka1  \
@@ -72,7 +91,7 @@ kafka-topics --bootstrap-server kafka1:19092 --list
 
 ```
 
-## Describe topic
+### Describe topic
 
 - Command to describe all the Kafka topics.
 
@@ -88,4 +107,27 @@ docker exec --interactive --tty kafka1  \
 kafka-topics --bootstrap-server kafka1:19092 --describe \
 --topic test-topic
 
+```
+
+### Alter topic Partitions
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-topics --bootstrap-server kafka1:19092 \
+--alter --topic test-topic --partitions 40
+```
+
+### How to view consumer groups
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-consumer-groups --bootstrap-server kafka1:19092 --list
+```
+
+#### Consumer Groups and their Offset
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-consumer-groups --bootstrap-server kafka1:19092 \
+--describe --group console-consumer-41911
 ```
