@@ -132,7 +132,13 @@ kafka-consumer-groups --bootstrap-server kafka1:19092 \
 --describe --group console-consumer-41911
 ```
 
-## Log file
+## Log file and related config
+
+- Log into the container.
+
+```
+docker exec --interactive --tty kafka1
+```
 
 - The config file is present in the below path.
 
