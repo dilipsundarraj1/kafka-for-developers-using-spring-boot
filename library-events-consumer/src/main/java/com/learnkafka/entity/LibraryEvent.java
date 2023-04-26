@@ -1,11 +1,8 @@
 package com.learnkafka.entity;
 
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
