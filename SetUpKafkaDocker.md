@@ -81,6 +81,75 @@ a-abc
 b-bus
 ```
 
+### Set up a Kafka Cluster with 3 brokers
+
+- Run this command and this will spin up a kafka cluster with 3 brokers.
+
+```
+docker-compose -f docker-compose-multi-broker.yml up
+```
+
+- Create topic with the replication factor as 3
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-topics --bootstrap-server kafka1:19092 \
+             --create \
+             --topic test-topic \
+             --replication-factor 3 --partitions 3
+```
+
+- Produce Messages to the topic.
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-console-producer --bootstrap-server localhost:9092,kafka2:19093,kafka3:19094 \
+                       --topic test-topic
+```
+
+- Consume Messages from the topic.
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-console-consumer --bootstrap-server localhost:9092,kafka2:19093,kafka3:19094 \
+                       --topic test-topic \
+                       --from-beginning
+```
+#### Log files in Multi Kafka Cluster
+
+- Log files will be created for each partition in each of the broker instance of the Kafka cluster.
+ -  Login to the container **kafka1**.
+  ```
+  docker exec -it kafka1 bash
+  ```
+ -  Login to the container **kafka2**.
+  ```
+  docker exec -it kafka2 bash
+  ```
+
+- Shutdown the kafka cluster
+
+```
+docker-compose -f docker-compose-multi-broker.yml down
+```
+
+### Setting up min.insync.replica
+
+- Topic - test-topic
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-configs  --bootstrap-server localhost:9092 --entity-type topics --entity-name test-topic \
+--alter --add-config min.insync.replicas=2
+```
+
+- Topic - library-events
+
+```
+docker exec --interactive --tty kafka1  \
+kafka-configs  --bootstrap-server localhost:9092 --entity-type topics --entity-name library-events \
+--alter --add-config min.insync.replicas=2
+```
 ## Advanced Kafka Commands
 
 ### List the topics in a cluster
@@ -100,13 +169,12 @@ docker exec --interactive --tty kafka1  \
 kafka-topics --bootstrap-server kafka1:19092 --describe
 ```
 
-- Command to describe all the Kafka topics.
+- Command to describe a specific Kafka topic.
 
 ```
 docker exec --interactive --tty kafka1  \
 kafka-topics --bootstrap-server kafka1:19092 --describe \
 --topic test-topic
-
 ```
 
 ### Alter topic Partitions

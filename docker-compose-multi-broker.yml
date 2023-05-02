@@ -3,6 +3,7 @@ version: '2.1'
 services:
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
+    platform: linux/amd64
     hostname: zoo1
     container_name: zoo1
     ports:
@@ -15,6 +16,7 @@ services:
 
   kafka1:
     image: confluentinc/cp-kafka:7.3.2
+    platform: linux/amd64
     hostname: kafka1
     container_name: kafka1
     ports:
@@ -27,13 +29,12 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
       KAFKA_BROKER_ID: 1
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     depends_on:
       - zoo1
 
   kafka2:
     image: confluentinc/cp-kafka:7.3.2
+    platform: linux/amd64
     hostname: kafka2
     container_name: kafka2
     ports:
@@ -46,14 +47,13 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
       KAFKA_BROKER_ID: 2
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     depends_on:
       - zoo1
 
 
   kafka3:
     image: confluentinc/cp-kafka:7.3.2
+    platform: linux/amd64
     hostname: kafka3
     container_name: kafka3
     ports:
@@ -66,7 +66,5 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
       KAFKA_BROKER_ID: 3
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     depends_on:
       - zoo1
