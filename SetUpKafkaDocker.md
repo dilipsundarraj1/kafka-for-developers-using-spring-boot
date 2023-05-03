@@ -205,7 +205,7 @@ kafka-consumer-groups --bootstrap-server kafka1:19092 \
 - Log into the container.
 
 ```
-docker exec --it kafka1
+docker exec -it kafka1
 ```
 
 - The config file is present in the below path.
