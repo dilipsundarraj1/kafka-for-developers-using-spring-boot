@@ -75,16 +75,13 @@ public class LibraryEventsService {
         Integer key = record.key();
         String message = record.value();
 
-        ListenableFuture<SendResult<Integer,String>> listenableFuture = kafkaTemplate.sendDefault(key, message);
-        listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() {
-            @Override
-            public void onFailure(Throwable ex) {
-                handleFailure(key, message, ex);
-            }
+        var listenableFuture = kafkaTemplate.sendDefault(key, message);
+        listenableFuture.whenComplete((sendResult, throwable) -> {
+            if (throwable != null) {
+                handleFailure(key, message, throwable);
+            } else {
+                handleSuccess(key, message, sendResult);
 
-            @Override
-            public void onSuccess(SendResult<Integer, String> result) {
-                handleSuccess(key, message, result);
             }
         });
     }

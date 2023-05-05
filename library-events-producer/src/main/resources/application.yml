@@ -24,6 +24,34 @@ spring:
 spring:
   config:
     activate:
+      on-profile: ssl
+  kafka:
+    template:
+      default-topic: library-events
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      ssl:
+        trust-store-location: file:/System/Volumes/Data/Dilip/udemy/kafka-for-developers-using-spring-boot/ssl/kafka.producer.truststore.jks
+        trust-store-password: confluent
+        key-store-location: file:/System/Volumes/Data/Dilip/udemy/kafka-for-developers-using-spring-boot/ssl/kafka.producer.keystore.jks
+        key-store-password: confluent
+      properties:
+        acks: all
+        retries: 10
+        retry.backoff.ms: 1000
+        security:
+          protocol: SSL
+        ssl.endpoint.identification.algorithm:
+
+    admin:
+      properties:
+        bootstrap.servers: localhost:9092
+---
+spring:
+  config:
+    activate:
       on-profile: nonprod
   kafka:
     template:
@@ -33,9 +61,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       ssl:
-        trust-store-location: file:/Dilip/udemy/kafka-for-developers-using-spring-boot/ssl/client.truststore.jks
+        trust-store-location: file:/System/Volumes/Data/Dilip/udemy/kafka-for-developers-using-spring-boot/ssl/client.truststore.jks
         trust-store-password: password
-        key-store-location: file:/Dilip/udemy/kafka-for-developers-using-spring-boot/ssl/client.keystore.jks
+        key-store-location: file:/System/Volumes/Data/Dilip/udemy/kafka-for-developers-using-spring-boot/ssl/client.keystore.jks
         key-store-password: password
       properties:
         acks: all
