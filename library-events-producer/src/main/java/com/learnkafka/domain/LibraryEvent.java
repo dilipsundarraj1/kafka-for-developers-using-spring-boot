@@ -19,6 +19,6 @@ public class LibraryEvent {
     private LibraryEventType libraryEventType;
     @NotNull
     @Valid
-    private Book book;
+    private BookRecord book;
 
 }

@@ -2,8 +2,8 @@ package com.learnkafka.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learnkafka.domain.Book;
-import com.learnkafka.domain.LibraryEvent;
+import com.learnkafka.domain.LibraryEventRecord;
+import com.learnkafka.util.TestUtil;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
@@ -38,41 +38,22 @@ public class LibraryEventProducerUnitTest {
     @Test
     void sendLibraryEvent_Approach2_failure() throws JsonProcessingException, ExecutionException, InterruptedException {
         //given
-        Book book = Book.builder()
-                .bookId(123)
-                .bookAuthor("Dilip")
-                .bookName("Kafka using Spring Boot")
-                .build();
-
-        LibraryEvent libraryEvent = LibraryEvent.builder()
-                .libraryEventId(null)
-                .book(book)
-                .build();
 
         when(kafkaTemplate.send(isA(ProducerRecord.class))).thenReturn(CompletableFuture.supplyAsync(()-> new RuntimeException("Exception Calling Kafka")));
         //when
 
-        assertThrows(Exception.class, ()->eventProducer.sendLibraryEvent_Approach2(libraryEvent).get());
+        assertThrows(Exception.class, ()->eventProducer.sendLibraryEvent_Approach2(TestUtil.libraryEventRecord()).get());
 
     }
 
     @Test
     void sendLibraryEvent_Approach2_success() throws JsonProcessingException, ExecutionException, InterruptedException {
         //given
-        Book book = Book.builder()
-                .bookId(123)
-                .bookAuthor("Dilip")
-                .bookName("Kafka using Spring Boot")
-                .build();
-
-        LibraryEvent libraryEvent = LibraryEvent.builder()
-                .libraryEventId(null)
-                .book(book)
-                .build();
-        String record = objectMapper.writeValueAsString(libraryEvent);
+        LibraryEventRecord libraryEventRecord = TestUtil.libraryEventRecord();
+        String record = objectMapper.writeValueAsString(libraryEventRecord);
 
 
-        ProducerRecord<Integer, String> producerRecord = new ProducerRecord("library-events", libraryEvent.getLibraryEventId(),record );
+        ProducerRecord<Integer, String> producerRecord = new ProducerRecord("library-events", libraryEventRecord.libraryEventId(),record );
         RecordMetadata recordMetadata = new RecordMetadata(new TopicPartition("library-events", 1),
                 1,1,System.currentTimeMillis(), 1, 2);
         SendResult<Integer, String> sendResult = new SendResult<Integer, String>(producerRecord,recordMetadata);
@@ -81,7 +62,7 @@ public class LibraryEventProducerUnitTest {
         when(kafkaTemplate.send(isA(ProducerRecord.class))).thenReturn(future);
         //when
 
-        var completableFuture = eventProducer.sendLibraryEvent_Approach2(libraryEvent);
+        var completableFuture = eventProducer.sendLibraryEvent_Approach2(libraryEventRecord);
 
         //then
         SendResult<Integer,String> sendResult1 = completableFuture.get();
