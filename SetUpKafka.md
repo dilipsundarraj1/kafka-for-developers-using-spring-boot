@@ -81,6 +81,10 @@ auto.create.topics.enable=false
 ```
 zookeeper-server-start.bat ..\..\config\zookeeper.properties
 ```
+- Add the below properties in the server.properties
+
+listeners=PLAINTEXT://localhost:9092
+auto.create.topics.enable=false
 
 -   Start up the Kafka Broker.
 
